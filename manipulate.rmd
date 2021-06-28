@@ -14,9 +14,16 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Read online table
+## 2.1 
+
+### 2.1.1 Create manipulate.rmd
+
+### Read online table
 
 ### Download table ('*.csv')
+
+### Get URL to CSV
+### Download CSV
 
 ```{r}
 # set variables
@@ -32,7 +39,7 @@ dir.create(dir_data)
 # download file
 download.file(csv_url, csv)
 ```
-### Read table 'read.csv()'
+### 2.1.4 Read table 'read.csv()'
 
 ```{r}
 # attempt to read csv
@@ -52,14 +59,14 @@ d <- read.csv(csv)
 #d
 ```
 
-### Show table `DT::datatable()`
+### 2.1.5 Show table `DT::datatable()`
 ```{r}
 DT::datatable(d)
 ```
 
-## Wrangle Data
+## 2.2 Wrangle Data
 
-### Manipulate with 'diplyr'
+### 2.2.2 Manipulate with 'diplyr'
 
 ```{r}
 library(DT)
@@ -82,7 +89,7 @@ d <- d %>%
 datatable(d)
 ```
 
-### Tidy with 'tidyr'
+### 2.2.3 Tidy with 'tidyr'
 
 ```{r}
 library(tidyr)
@@ -93,7 +100,7 @@ d <- d %>%
 datatable(d)
 ```
 
-### Summarize with 'diplyr'
+### 2.2.4 Summarize with 'diplyr'
 
 ```{r}
 library(stringr)
@@ -112,7 +119,7 @@ datatable(d_sum) %>%
   formatCurrency("avg_revenue")
 ```
 
-### Apply functions with 'purr' on a 'nest''ed 'tibble'
+### 2.2.5 Apply functions with 'purr' on a 'nest''ed 'tibble'
 
 ```{r}
 library(purrr)

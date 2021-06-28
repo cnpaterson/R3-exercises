@@ -1,0 +1,122 @@
+---
+title: "Visualize"
+author: "C Paterson"
+date: "6/28/2021"
+output: 
+  html_document: 
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: "show"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 3.1 Read Data
+
+```{r}
+# libraries
+library(here)
+library(readr)
+library(DT)
+
+# variables
+# this access the data from the webpage and not downloaded data. Here also allows for searching for the file in the parent directories if not in the working directory
+url_ac <- "https://oceanview.pfeg.noaa.gov/erddap/tabledap/cciea_AC.csv"
+csv_ac <- here("data/cciea_AC.csv")
+
+# read data
+d_ac <- read_csv(url_ac, col_names = F, skip = 2)
+names(d_ac) <- names(read_csv(url_ac))
+
+# show data
+datatable(d_ac)
+```
+
+## 3.2 Plot statically with ggplot2
+### 3.2.1 Simple line plot + geom_line()
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# subset data
+d_coast <- d_ac %>%
+  # select columns that you want to see
+  select(time, total_fisheries_revenue_coastwide) %>%
+  # filter rows to exclude missing data
+  filter(!is.na(total_fisheries_revenue_coastwide))
+datatable(d_coast)
+```
+
+```{r}
+# ggplot object
+p_coast <- d_coast %>%
+  # setup aesthetics
+  ggplot(aes(x=time, y=total_fisheries_revenue_coastwide)) +
+  # add geometry
+  geom_line()
+
+# show plot
+p_coast
+```
+### 3.2.2 Trend line + geom_smooth()
+```{r}
+# add a smooth layer based on a linear model (method = "lm")
+p_coast +
+  geom_smooth(method=NULL)
+
+# other methods can be used as well: lm, glm, gam, loess. NULL chooses model based on largest group across all panels
+```
+
+### 3.2.3 Distribution of values + geom_historgram()
+```{r}
+d_coast %>%
+  #setup aestetics
+  ggplot(aes(x=total_fisheries_revenue_coastwide)) +
+  # add geometry (can include a specified bin width for the histogram)
+  geom_histogram(binwidth = 50)
+```
+
+### 3.2.4 Series line plot aes(color=region)
+```{r}
+library(stringr)
+library(tidyr)
+
+d_rgn <- d_ac %>%
+  # select columns
+  select(
+    time,
+    starts_with("total_fisheries_revenue")) %>%
+  # exclude column
+  select(-total_fisheries_revenue_coastwide) %>%
+  # pivot longer
+  pivot_longer(-time) %>%
+  # mutate region by stripping other
+  mutate(
+    region = name %>%
+      str_replace("total_fisheries_revenue_","") %>%
+      str_to_upper())
+  # filter for not NA
+  filter(!is.na(Value)) %>%
+  #select columns
+  select(time, region, value)
+
+# create plot object
+  p_rgn <- ggplot(
+    d_rgn,
+    #aestetics
+    aes(
+      x=time,
+      y=value,
+      group=region,
+      color=region)) +
+    #geometry
+    geom_line()
+
+# show plot
+p_rgn
+```
+
