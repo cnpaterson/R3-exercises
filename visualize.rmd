@@ -98,9 +98,9 @@ d_rgn <- d_ac %>%
   mutate(
     region = name %>%
       str_replace("total_fisheries_revenue_","") %>%
-      str_to_upper())
+      str_to_upper()) %>%
   # filter for not NA
-  filter(!is.na(Value)) %>%
+  filter(!is.na(value)) %>%
   #select columns
   select(time, region, value)
 
@@ -118,5 +118,112 @@ d_rgn <- d_ac %>%
 
 # show plot
 p_rgn
+```
+
+### 3.2.5 Update labels =labs()
+```{r}
+p_rgn <- p_rgn +
+  labs(
+    title="Fisheries Revenue",
+    x = "Year",
+    y = "Millions $ (year 2015)",
+    color = "Region"  )
+p_rgn
+```
+
+### 3.2.6 Multiple plots with facet_wrap()
+```{r}
+p_rgn +
+  facet_wrap(vars(region))
+```
+
+### 3.2.7 Bar plot + geom_col()
+```{r}
+library(glue)
+library(lubridate)
+
+yr_max <- year(max(d_rgn$time))
+
+d_rgn %>%
+  # filter by most recent time
+  filter(year(time)==yr_max) %>%
+  # setup aesthetics
+  ggplot(aes(x=region,y=value,fill=region))+
+  # add geometry
+  geom_col()+
+  # add labels
+  labs(
+    title=glue("Fisheries Revenue for {yr_max}"),
+    x="Region",
+    y="Millions $ (year 2015",
+    fill="Region"  )
+```
+
+### 3.2.8 Variation of series with + geom_boxplot()
+```{r}
+d_rgn %>%
+  # setup aestetics
+  ggplot(aes(x=region,y=value,fill=region))+
+  # add geometry
+  geom_boxplot()+
+  # add labels
+  labs(
+    title="Fisheries Revenue Variability",
+    x="Region",
+    y="Millions $ (year 2015)") +
+  # drop legend since redundant with x axis
+  theme( legend.position = "none")
+```
+
+### 3.2.9 Variation of series with + geom_violin()
+```{r}
+p_rgn_violin <- d_rgn %>%
+  # setup aestetics
+  ggplot(aes(x=region,y=value,fill=region)) +
+  # add geometry
+  geom_violin()+
+  # add labels
+  labs(
+    title="Fisheries Revenue Variability",
+    x="Region",
+    y="Millions $ (year 2015)"  ) +
+  # drop legend since redundant with x axis
+  theme(legend.position = "none")
+p_rgn_violin
+```
+
+### 3.2.10 Change Theme theme()
+```{r}
+p_rgn_violin +
+  theme_minimal()
+```
+
+## 3.3 Plot interactively with plotly or dygraphs
+### 3.3.1 Make ggplot interactive with plotly::ggplotly()
+
+```{r}
+plotly::ggplotly(p_rgn)
+```
+
+### 3.3.2 Create interactive time series with dygraphs::dygraphy()
+
+```{r}
+library(dygraphs)
+
+#dygraphs requires data to be in wide format
+d_rgn_wide <- d_rgn %>%
+  mutate(
+    Year = year(time)  ) %>%
+  select(Year, region, value) %>%
+  pivot_wider(
+    names_from=region,
+    values_from=value  )
+datatable(d_rgn_wide)
+```
+
+```{r}
+d_rgn_wide %>%
+  dygraph( ) %>%
+  dyRangeSelector()
 ```
 
