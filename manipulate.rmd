@@ -46,17 +46,17 @@ download.file(csv_url, csv)
 d <- read.csv(csv)
 
 # show the data frame
-#d
+d
 
 # read csv by skipping first two lines, so no header. Do this since data has two lines of header and we don't want the second line of header to be counted as a row in the table.
-#d <- read.csv(csv, skip=2, header=FALSE)
+d <- read.csv(csv, skip=2, header=FALSE)
 
 # show the data frame
-#d
+d
 
 # update data frame to original column names
-#names(d) <- names(read.csv(csv))
-#d
+names(d) <- names(read.csv(csv))
+d
 ```
 
 ### 2.1.5 Show table `DT::datatable()`
