@@ -7,9 +7,9 @@ navbar:
     - text: "Collaborate"
       href: collaborate.html
     - text: "Manupulate"
-      href: Manupulate.html
+      href: manupulate.html
     - text: "Visualize"
-      href: Visualize.html
+      href: visualize.html
     - text: "Map"
       href: map.html
 output_dir: "."
